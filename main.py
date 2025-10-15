@@ -28,6 +28,46 @@ chosing_shape = False
 
 blockSize = 5
 
+
+
+class Pixels:
+    def __init__(self):     
+        self.new_pixels = []  # The pixels collected on mouse press (volatile)
+        self.all_pixels = []  # All the pixels collected since the beginning of program (non-volatile)
+        self.sorted_pixels = []  # 2Dimensional array containing the separated pixel arrays(new pixels array)
+        self.erasing_pixels = False # flag
+        self.erased_positions = [] #pixels erased
+
+    def record_pixels(self):
+
+        if pygame.mouse.get_pressed()[0]:
+            mouse_pos = pygame.mouse.get_pos()
+            new_pixel = mouse_pos + (color,) + (blockSize,)
+
+            if new_pixel not in self.new_pixels:
+                self.new_pixels.append(new_pixel)
+
+            if new_pixel not in self.all_pixels:
+                self.all_pixels.append(new_pixel)
+
+        if not pygame.mouse.get_pressed()[0]:
+            self.sorted_pixels.append(self.new_pixels)
+            self.new_pixels = []
+
+    def get_pixels(self, pixel_list_type):
+        if pixel_list_type == "sorted":
+            return self.sorted_pixels
+        else:
+            return self.all_pixels
+
+    def clear_pixels(self):
+        return self.all_pixels.clear()
+
+    def delete_pixel(self, pixel):
+        self.all_pixels.remove(pixel)
+        self.sorted_pixels.remove(pixel)
+
+
 class Lines: 
     def __init__(self):
         self.lines = []
@@ -56,16 +96,7 @@ class Line:
 
 
 class Draw:
-    def __init__(self):
-        self.new_pixels = []  # The pixels collected on mouse press (volatile)
-        self.all_pixels = []  # All the pixels collected since the beginning of program (non-volatile)
-        self.sorted_pixels = []  # 2Dimensional array containing the separated pixel arrays(new pixels array)
-        self.erasing_pixels = False
-        self.erased_positions = []
-
-    #create an array containing lines that you need to connect to all the points on the screen
     
-
     def record_coordinates(self):
 
         if pygame.mouse.get_pressed()[0]:
@@ -109,6 +140,9 @@ class Draw:
                                     width=5 + pixel[3])
 
         # why am i creating two lines at the same time
+
+        # I am creating 2 lines at the same time because we need to draw a line when the mouse is being presed
+        # and when the mouse is done being pressed
 
         for eraser_pixel in self.erased_positions:
             pygame.draw.rect(
